@@ -38,6 +38,7 @@ export default (sequelize, dataTypes) => {
 
 			/* Set by Associations */
 			communityId: { type: dataTypes.UUID, allowNull: false },
+			pubStyleId: { type: dataTypes.UUID, allowNull: false },
 		},
 		{
 			indexes: [{ fields: ['communityId'], method: 'BTREE' }],
@@ -47,6 +48,7 @@ export default (sequelize, dataTypes) => {
 						Pub,
 						PubAttribution,
 						PubManager,
+						PubStyle,
 						CollectionPub,
 						Community,
 						Discussion,
@@ -99,6 +101,10 @@ export default (sequelize, dataTypes) => {
 						onDelete: 'CASCADE',
 						as: 'reviews',
 						foreignKey: 'pubId',
+					});
+					Pub.belongsTo(PubStyle, {
+						as: 'style',
+						foreignKey: 'pubStyleId',
 					});
 				},
 			},

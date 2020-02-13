@@ -1,9 +1,9 @@
 import uuidv4 from 'uuid/v4';
-import { Pub, PubManager, PubAttribution, CollectionPub, Branch } from '../models';
+import { Pub, PubManager, PubAttribution, PubStyle, CollectionPub, Branch } from '../models';
 import { generateHash, slugifyString } from '../utils';
 import { setPubSearchData, deletePubSearchData } from '../utils/search';
 
-export const createPub = (inputValues, userData) => {
+export const createPub = async (inputValues, userData) => {
 	const newPubSlug = generateHash(8);
 	const months = [
 		'Jan',
@@ -22,6 +22,13 @@ export const createPub = (inputValues, userData) => {
 	const date = new Date();
 	const dateString = `${months[date.getMonth()]} ${date.getDate()}`;
 
+	const pubStyle = await PubStyle.create({
+		id: uuidv4(),
+		headerStyle: 'dark',
+		headerBackgroundColor: 'light',
+		headerBackgroundImage: null,
+	});
+
 	return Pub.create({
 		title: `New Pub on ${dateString}`,
 		slug: newPubSlug,
@@ -30,6 +37,7 @@ export const createPub = (inputValues, userData) => {
 		isCommunityAdminManaged: true,
 		// draftEditHash: generateHash(8),
 		// draftViewHash: generateHash(8),
+		pubStyleId: pubStyle.id,
 	})
 		.then((newPub) => {
 			const createPubManager = PubManager.create({
@@ -87,6 +95,7 @@ export const createPub = (inputValues, userData) => {
 				createCollectionPubs,
 				createPublicBranch,
 				createDraftBranch,
+				creaet,
 			]);
 		})
 		.then(([newPub]) => {
