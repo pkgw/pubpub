@@ -1,6 +1,5 @@
 import Promise from 'bluebird';
 import React from 'react';
-import { User as UserContainer } from 'containers';
 import { isPubPublic } from 'shared/pub/permissions';
 import { formatAndAuthenticatePub } from '../utils/formatPub';
 import Html from '../Html';
@@ -23,7 +22,7 @@ app.get(['/user/:slug', '/user/:slug/:mode'], (req, res, next) => {
 			slug: req.params.slug.toLowerCase(),
 		},
 		attributes: {
-			exclude: ['salt', 'hash', 'email', 'createdAt', 'updatedAt'],
+			exclude: ['salt', 'hash', 'email', 'updatedAt'],
 		},
 		include: [
 			{
@@ -77,18 +76,8 @@ app.get(['/user/:slug', '/user/:slug/:mode'], (req, res, next) => {
 		],
 	});
 
-	return getInitialData(req)
-		.then((initialData) => {
-			const communityAdminQuery = CommunityAdmin.findOne({
-				where: {
-					userId: initialData.loginData.id,
-					communityId: initialData.communityData.id || null,
-				},
-			});
-			return Promise.all([initialData, getUserData, communityAdminQuery]);
-		})
-
-		.then(([initialData, userData, communityAdminData]) => {
+	return Promise.all([getInitialData(req), getUserData])
+		.then(([initialData, userData]) => {
 			if (!userData) {
 				throw new Error('User Not Found');
 			}
@@ -107,35 +96,33 @@ app.get(['/user/:slug', '/user/:slug/:mode'], (req, res, next) => {
 								...attribution.pub,
 								attributions: [{ ...attribution, user: userDataJson }],
 							},
-							loginData: initialData.loginData,
-							communityAdminData: communityAdminData,
+							loginId: initialData.loginData.id,
+							scopeData: initialData.scopeData,
 							req: { query: {}, params: {} },
 						},
 						false,
 					);
-					return formattedPub && isPubPublic(formattedPub);
+					return formattedPub && isPubPublic(formattedPub, initialData.scopeData);
 				});
 			}
 
-			const newInitialData = {
-				...initialData,
-				userData: userDataJson,
-			};
+			const isNewishUser = Date.now() - userData.createdAt.valueOf() < 1000 * 86400 * 30;
+
 			return renderToNodeStream(
 				res,
 				<Html
 					chunkName="User"
-					initialData={newInitialData}
+					initialData={initialData}
+					viewData={{ userData: userDataJson }}
 					headerComponents={generateMetaComponents({
-						initialData: newInitialData,
+						initialData: initialData,
 						title: `${userDataJson.fullName} · PubPub`,
 						description: userDataJson.bio,
 						image: userDataJson.avatar,
 						canonicalUrl: `https://www.pubpub.org/user/${userDataJson.slug}`,
+						unlisted: isNewishUser,
 					})}
-				>
-					<UserContainer {...newInitialData} />
-				</Html>,
+				/>,
 			);
 		})
 		.catch(handleErrors(req, res, next));

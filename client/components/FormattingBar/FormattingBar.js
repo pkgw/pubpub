@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Toolbar, ToolbarItem, useToolbarState } from 'reakit';
 
-import { usePageContext } from 'containers/Pub/pubHooks';
+import { usePageContext } from 'utils/hooks';
 import { useRefMap } from 'utils/useRefMap';
 
 import BlockTypeSelector from './BlockTypeSelector';
@@ -264,6 +264,11 @@ const FormattingBar = (props) => {
 						openedButton &&
 						openedButton.controls &&
 						openedButton.controls.showCloseButton
+					}
+					disableClickProxying={
+						openedButton &&
+						openedButton.controls &&
+						openedButton.controls.disableClickProxying
 					}
 				>
 					{({ pendingAttrs, onClose }) => (

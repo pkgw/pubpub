@@ -21,6 +21,11 @@ a {
 	text-decoration: underline;
 	cursor: pointer;
 }
+
+.capitalize {
+	text-transform: capitalize;
+}
+
 .underline-on-hover {
 	text-decoration: none;
 	&:hover {
@@ -28,7 +33,6 @@ a {
 		cursor: pointer;
 	}
 }
-
 .subtext {
 	color: #555;
 	font-size: 0.85em;
@@ -62,8 +66,9 @@ a {
 	}
 	ul,
 	ol {
-		font-size: 1.125rem;
-		line-height: 1.5;
+		li {
+			margin-bottom: 1em;
+		}
 	}
 }
 

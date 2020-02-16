@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Popover, PopoverInteractionKind, Position } from '@blueprintjs/core';
 import { SketchPicker } from 'react-color';
 
-import { PageContext } from 'components/PageWrapper/PageWrapper';
+import { usePageContext } from 'utils/hooks';
 
 require('./colorInput.scss');
 
@@ -32,7 +32,7 @@ const presetColors = [
 ];
 
 const ColorInput = function(props) {
-	const { communityData } = useContext(PageContext);
+	const { communityData } = usePageContext();
 	const allPresetColors = communityData
 		? [
 				...presetColors,

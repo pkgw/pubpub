@@ -1,4 +1,7 @@
+import React, { useContext } from 'react';
 import { remove as removeDiacritics } from 'diacritics';
+import { PageContext } from 'utils/hooks';
+import Icon from 'components/Icon/Icon';
 import { setIsProd, isProd } from './isProd';
 
 export { hydrateWrapper } from './hydrateWrapper';
@@ -7,6 +10,10 @@ export { apiFetch } from './apiFetch';
 if (typeof window === 'undefined') {
 	setIsProd(process.env.PUBPUB_PRODUCTION);
 }
+
+export const usePageContext = () => {
+	return useContext(PageContext);
+};
 
 export const getFirebaseConfig = function() {
 	return {
@@ -169,6 +176,26 @@ export function renderLatexString(value, isBlock, callback) {
 			callback(error);
 		});
 }
+
+export const splitThreads = (threads) => {
+	const discussions = [];
+	const forks = [];
+	const reviews = [];
+	threads.forEach((thread) => {
+		if (thread.reviewId) {
+			reviews.push(thread);
+		} else if (thread.forkId) {
+			forks.push(thread);
+		} else {
+			discussions.push(thread);
+		}
+	});
+	return {
+		discussions: discussions,
+		forks: forks,
+		reviews: reviews,
+	};
+};
 
 export function checkForAsset(url) {
 	let checkCount = 0;
@@ -435,4 +462,39 @@ export const getEmbedType = (input) => {
 		}
 		return prev;
 	}, null);
+};
+
+export const generateSocialItems = (communityData) => {
+	return [
+		{
+			id: 'si-0',
+			icon: <Icon icon="globe" />,
+			title: 'Website',
+			value: communityData.website,
+			url: communityData.website,
+		},
+		{
+			id: 'si-1',
+			icon: <Icon icon="twitter" />,
+			title: 'Twitter',
+			value: communityData.twitter,
+			url: `https://twitter.com/${communityData.twitter}`,
+		},
+		{
+			id: 'si-2',
+			icon: <Icon icon="facebook" />,
+			title: 'Facebook',
+			value: communityData.facebook,
+			url: `https://facebook.com/${communityData.facebook}`,
+		},
+		{
+			id: 'si-3',
+			icon: <Icon icon="envelope" />,
+			title: 'Contact',
+			value: communityData.email,
+			url: `mailto:${communityData.email}`,
+		},
+	].filter((item) => {
+		return item.value;
+	});
 };

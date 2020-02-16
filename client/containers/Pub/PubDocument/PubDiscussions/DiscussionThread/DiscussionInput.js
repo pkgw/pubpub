@@ -8,9 +8,8 @@ import Editor, {
 	getLocalHighlightText,
 } from '@pubpub/editor';
 import { AnchorButton, Button, Intent } from '@blueprintjs/core';
-
 import { Avatar } from 'components';
-import { PageContext } from 'components/PageWrapper/PageWrapper';
+import { PageContext } from 'utils/hooks';
 import FormattingBarLegacy from 'components/FormattingBarLegacy/FormattingBar';
 import { apiFetch } from 'utils';
 
@@ -98,7 +97,7 @@ const DiscussionInput = (props) => {
 	return (
 		<div className="discussion-item-component input">
 			<div className="avatar-wrapper">
-				<Avatar width={18} userInitials={loginData.intials} userAvatar={loginData.avatar} />
+				<Avatar width={18} initials={loginData.intials} avatar={loginData.avatar} />
 			</div>
 			{!isLoggedIn && (
 				<React.Fragment>

@@ -5,7 +5,7 @@ import { AnchorButton } from '@blueprintjs/core';
 import { pubDataProps } from 'types/pub';
 import { Avatar } from 'components';
 import Editor from '@pubpub/editor';
-import { PageContext } from 'components/PageWrapper/PageWrapper';
+import { PageContext } from 'utils/hooks';
 
 require('./reviewEvent.scss');
 
@@ -45,11 +45,7 @@ const ReviewEvent = (props) => {
 	);
 	return (
 		<div className="review-event-component">
-			<Avatar
-				width={30}
-				userInitials={eventData.user.initials}
-				userAvatar={eventData.user.avatar}
-			/>
+			<Avatar width={30} initials={eventData.user.initials} avatar={eventData.user.avatar} />
 			<div className="event-content">
 				<a className="user" href={`/user/${eventData.user.slug}`}>
 					{eventData.user.fullName}

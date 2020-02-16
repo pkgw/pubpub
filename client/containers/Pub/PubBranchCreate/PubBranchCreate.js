@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { PageContext } from 'components/PageWrapper/PageWrapper';
+import { PageContext } from 'utils/hooks';
 import { MenuItem, Button, Position, Intent } from '@blueprintjs/core';
 import { Select } from '@blueprintjs/select';
 import { pubDataProps } from 'types/pub';
@@ -167,8 +167,8 @@ const PubBranchCreate = (props) => {
 									<Avatar
 										key="avatar"
 										width={25}
-										userInitials={permission.user.initials}
-										userAvatar={permission.user.avatar}
+										initials={permission.user.initials}
+										avatar={permission.user.avatar}
 									/>,
 									<span key="name">{permission.user.fullName}</span>,
 								]}

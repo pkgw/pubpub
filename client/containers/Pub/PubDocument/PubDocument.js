@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { setLocalHighlight } from '@pubpub/editor';
 import { pubDataProps } from 'types/pub';
-import { PageContext } from 'components/PageWrapper/PageWrapper';
+import { PageContext } from 'utils/hooks';
 import PubBody from './PubBody';
 import PubInlineMenu from './PubInlineMenu';
 import PubFileImport from './PubFileImport';

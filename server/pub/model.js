@@ -35,6 +35,11 @@ export default (sequelize, dataTypes) => {
 			isCommunityAdminManaged: { type: dataTypes.BOOLEAN },
 			downloads: { type: dataTypes.JSONB },
 			licenseSlug: { type: dataTypes.TEXT, defaultValue: 'cc-by' },
+			// isPublicBranches: { type: dataTypes.BOOLEAN },
+			// isPublicDiscussions: { type: dataTypes.BOOLEAN },
+			// isPublicReviews: { type: dataTypes.BOOLEAN },
+			viewHash: { type: dataTypes.STRING },
+			editHash: { type: dataTypes.STRING },
 
 			/* Set by Associations */
 			communityId: { type: dataTypes.UUID, allowNull: false },
@@ -51,11 +56,13 @@ export default (sequelize, dataTypes) => {
 						PubStyle,
 						CollectionPub,
 						Community,
-						Discussion,
+						// Discussion,
 						Branch,
-						Merge,
+						// Merge,
 						PubVersion,
-						Review,
+						// Review,
+						Release,
+						Thread,
 					} = models;
 					Pub.hasMany(PubAttribution, {
 						onDelete: 'CASCADE',
@@ -77,9 +84,14 @@ export default (sequelize, dataTypes) => {
 						as: 'community',
 						foreignKey: 'communityId',
 					});
-					Pub.hasMany(Discussion, {
+					// Pub.hasMany(Discussion, {
+					// 	onDelete: 'CASCADE',
+					// 	as: 'discussions',
+					// 	foreignKey: 'pubId',
+					// });
+					Pub.hasMany(Thread, {
 						onDelete: 'CASCADE',
-						as: 'discussions',
+						as: 'threads',
 						foreignKey: 'pubId',
 					});
 					Pub.hasMany(Branch, {
@@ -87,25 +99,30 @@ export default (sequelize, dataTypes) => {
 						as: 'branches',
 						foreignKey: 'pubId',
 					});
-					Pub.hasMany(Merge, {
+					Pub.hasMany(Release, {
 						onDelete: 'CASCADE',
-						as: 'merges',
+						as: 'releases',
 						foreignKey: 'pubId',
 					});
+					// Pub.hasMany(Merge, {
+					// 	onDelete: 'CASCADE',
+					// 	as: 'merges',
+					// 	foreignKey: 'pubId',
+					// });
 					Pub.hasMany(PubVersion, {
 						onDelete: 'CASCADE',
 						as: 'pubVersions',
-						foreignKey: 'pubId',
-					});
-					Pub.hasMany(Review, {
-						onDelete: 'CASCADE',
-						as: 'reviews',
 						foreignKey: 'pubId',
 					});
 					Pub.belongsTo(PubStyle, {
 						as: 'style',
 						foreignKey: 'pubStyleId',
 					});
+					// Pub.hasMany(Review, {
+					// 	onDelete: 'CASCADE',
+					// 	as: 'reviews',
+					// 	foreignKey: 'pubId',
+					// });
 				},
 			},
 		},

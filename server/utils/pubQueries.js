@@ -1,31 +1,12 @@
-/* eslint-disable import/prefer-default-export */
 import { buildSchema, jsonToNode, getNotes } from '@pubpub/editor';
-
 import discussionSchema from 'containers/Pub/PubDocument/DiscussionAddon/discussionSchema';
-import {
-	Branch,
-	BranchPermission,
-	Collection,
-	CollectionAttribution,
-	CollectionPub,
-	CommunityAdmin,
-	Discussion,
-	Export,
-	Page,
-	Pub,
-	PubAttribution,
-	PubManager,
-	PubVersion,
-	Review,
-	ReviewEvent,
-	User,
-} from '../models';
+import { Branch, Pub, PubVersion } from '../models';
 import { generateCiteHtmls } from '../editor/queries';
 
-import { attributesPublicUser } from '.';
 import { generateCitationHTML } from './citations';
 import { getBranchDoc } from './firebaseAdmin';
 import { formatAndAuthenticatePub } from './formatPub';
+import { buildPubOptions } from './queryHelpers';
 
 export const findPubQuery = (slug, communityId) =>
 	Pub.findOne({
@@ -33,133 +14,138 @@ export const findPubQuery = (slug, communityId) =>
 			slug: slug,
 			communityId: communityId,
 		},
-		include: [
-			{
-				model: PubManager,
-				as: 'managers',
-				separate: true,
-				include: [
-					{
-						model: User,
-						as: 'user',
-						attributes: attributesPublicUser,
-					},
-				],
-			},
-			{
-				model: PubAttribution,
-				as: 'attributions',
-				required: false,
-				separate: true,
-				include: [
-					{
-						model: User,
-						as: 'user',
-						required: false,
-						attributes: attributesPublicUser,
-					},
-				],
-			},
-			{
-				model: CollectionPub,
-				as: 'collectionPubs',
-				required: false,
-				separate: true,
-				include: [
-					{
-						model: Collection,
-						as: 'collection',
-						include: [
-							{
-								model: Page,
-								as: 'page',
-								required: false,
-								attributes: ['id', 'title', 'slug'],
-							},
-							{
-								model: CollectionAttribution,
-								as: 'attributions',
-								include: [
-									{
-										model: User,
-										as: 'user',
-									},
-								],
-							},
-						],
-					},
-				],
-			},
-			{
-				required: false,
-				separate: true,
-				model: Discussion,
-				as: 'discussions',
-				include: [
-					{
-						model: User,
-						as: 'author',
-						attributes: attributesPublicUser,
-					},
-				],
-			},
-			{
-				// separate: true,
-				model: Branch,
-				as: 'branches',
-				required: true,
-				include: [
-					{
-						model: BranchPermission,
-						as: 'permissions',
-						separate: true,
-						required: false,
-						include: [
-							{
-								model: User,
-								as: 'user',
-								attributes: attributesPublicUser,
-							},
-						],
-					},
-					{
-						model: Export,
-						as: 'exports',
-					},
-				],
-			},
-			{
-				model: Review,
-				as: 'reviews',
-				include: [
-					{
-						model: ReviewEvent,
-						as: 'reviewEvents',
-						required: false,
-						include: [
-							{
-								model: User,
-								as: 'user',
-								attributes: attributesPublicUser,
-							},
-						],
-					},
-				],
-			},
-		],
+		...buildPubOptions(false, true),
+		// include: [
+		// 	{
+		// 		model: PubManager,
+		// 		as: 'managers',
+		// 		separate: true,
+		// 		include: [
+		// 			{
+		// 				model: User,
+		// 				as: 'user',
+		// 				attributes: attributesPublicUser,
+		// 			},
+		// 		],
+		// 	},
+		// 	{
+		// 		model: PubAttribution,
+		// 		as: 'attributions',
+		// 		required: false,
+		// 		separate: true,
+		// 		include: [
+		// 			{
+		// 				model: User,
+		// 				as: 'user',
+		// 				required: false,
+		// 				attributes: attributesPublicUser,
+		// 			},
+		// 		],
+		// 	},
+		// 	{
+		// 		model: CollectionPub,
+		// 		as: 'collectionPubs',
+		// 		required: false,
+		// 		separate: true,
+		// 		include: [
+		// 			{
+		// 				model: Collection,
+		// 				as: 'collection',
+		// 				include: [
+		// 					{
+		// 						model: Page,
+		// 						as: 'page',
+		// 						required: false,
+		// 						attributes: ['id', 'title', 'slug'],
+		// 					},
+		// 					{
+		// 						model: CollectionAttribution,
+		// 						as: 'attributions',
+		// 						include: [
+		// 							{
+		// 								model: User,
+		// 								as: 'user',
+		// 							},
+		// 						],
+		// 					},
+		// 				],
+		// 			},
+		// 		],
+		// 	},
+		// 	{
+		// 		required: false,
+		// 		separate: true,
+		// 		model: Thread,
+		// 		as: 'threads',
+		// 		include: [
+		// 			{
+		// 				model: User,
+		// 				as: 'author',
+		// 				attributes: attributesPublicUser,
+		// 			},
+		// 			{
+		// 				model: ThreadUser,
+		// 				as: 'threadUsers',
+		// 				include: [
+		// 					{
+		// 						model: User,
+		// 						as: 'author',
+		// 						attributes: attributesPublicUser,
+		// 					},
+		// 				],
+		// 			},
+		// 		],
+		// 	},
+		// 	{
+		// 		// separate: true,
+		// 		model: Branch,
+		// 		as: 'branches',
+		// 		required: true,
+		// 		include: [
+		// 			{
+		// 				model: BranchPermission,
+		// 				as: 'permissions',
+		// 				separate: true,
+		// 				required: false,
+		// 				include: [
+		// 					{
+		// 						model: User,
+		// 						as: 'user',
+		// 						attributes: attributesPublicUser,
+		// 					},
+		// 				],
+		// 			},
+		// 			{
+		// 				model: Export,
+		// 				as: 'exports',
+		// 			},
+		// 		],
+		// 	},
+		// 	// {
+		// 	// 	model: Review,
+		// 	// 	as: 'reviews',
+		// 	// 	include: [
+		// 	// 		{
+		// 	// 			model: ReviewEvent,
+		// 	// 			as: 'reviewEvents',
+		// 	// 			required: false,
+		// 	// 			include: [
+		// 	// 				{
+		// 	// 					model: User,
+		// 	// 					as: 'user',
+		// 	// 					attributes: attributesPublicUser,
+		// 	// 				},
+		// 	// 			],
+		// 	// 		},
+		// 	// 	],
+		// 	// },
+		// ],
 	});
 
+// getPubFromRoute(req, communityId, getThreads)
 export const findPub = (req, initialData, mode) => {
-	const getPubData = findPubQuery(req.params.slug.toLowerCase(), initialData.communityData.id);
-
-	const getCommunityAdminData = CommunityAdmin.findOne({
-		where: {
-			userId: initialData.loginData.id,
-			communityId: initialData.communityData.id,
-		},
-	});
-	return Promise.all([getPubData, getCommunityAdminData])
-		.then(([pubData, communityAdminData]) => {
+	return findPubQuery(req.params.pubSlug.toLowerCase(), initialData.communityData.id)
+		.then((pubData) => {
 			if (!pubData) {
 				throw new Error('Pub Not Found');
 			}
@@ -168,8 +154,8 @@ export const findPub = (req, initialData, mode) => {
 			const formattedPubData = formatAndAuthenticatePub(
 				{
 					pub: pubDataJson,
-					loginData: initialData.loginData,
-					communityAdminData: communityAdminData,
+					loginId: initialData.loginData.id,
+					scopeData: initialData.scopeData,
 					accessHash: req.query.access,
 					branchShortId: req.params.branchShortId,
 					versionNumber: req.params.versionNumber,
@@ -258,10 +244,11 @@ export const findPub = (req, initialData, mode) => {
 				...formattedPubData,
 				footnotes: footnotesData,
 				citations: citationsData,
+				citationData: citationHtml,
 				initialDoc: content,
 				initialDocKey: mostRecentRemoteKey,
 				historyData: historyData,
-				citationData: citationHtml,
+				
 			};
 
 			/* When getFirebaseDoc stores a checkpoint update, it also returns */

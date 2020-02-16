@@ -5,7 +5,7 @@ import { OverflowList } from '@blueprintjs/core';
 import { pubDataProps } from 'types/pub';
 import { chooseCollectionForPub } from 'utils/collections';
 import { collectionUrl } from 'shared/utils/canonicalUrls';
-import { PageContext } from 'components/PageWrapper/PageWrapper';
+import { PageContext } from 'utils/hooks';
 import { Menu, MenuItem } from 'components/Menu';
 
 import CollectionBrowser from './CollectionBrowser';

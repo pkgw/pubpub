@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Menu, MenuItem, Intent } from '@blueprintjs/core';
 import { pubDataProps } from 'types/pub';
 import { GridWrapper } from 'components';
-import { PageContext } from 'components/PageWrapper/PageWrapper';
+import { PageContext } from 'utils/hooks';
 import Attribution from './Attribution';
 import Collections from './Collections';
 import Details from './Details';
@@ -44,7 +44,7 @@ const PubManage = (props) => {
 									key={mode.text}
 									text={mode.text}
 									active={mode.active}
-									href={`/pub/${locationData.params.slug}/manage/${mode.path}`}
+									href={`/pub/${locationData.params.pubSlug}/manage/${mode.path}`}
 									intent={mode.danger ? Intent.DANGER : undefined}
 								/>
 							);

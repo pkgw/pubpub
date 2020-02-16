@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { LicenseSelect } from 'components';
-import { PageContext } from 'components/PageWrapper/PageWrapper';
+import { PageContext } from 'utils/hooks';
 import { getLicenseBySlug } from 'shared/license';
 
 import PubBottomSection, { SectionBullets, AccentedIconButton } from './PubBottomSection';
@@ -16,7 +16,7 @@ const propTypes = {
 
 const LicenseSection = (props) => {
 	const { pubData, updateLocalData } = props;
-	const { communityData } = useContext(PageContext);
+	const { communityData, scopeData } = useContext(PageContext);
 	const { link, full, short, version } = getLicenseBySlug(pubData.licenseSlug);
 
 	return (
@@ -33,7 +33,7 @@ const LicenseSection = (props) => {
 				</SectionBullets>
 			}
 			iconItems={({ iconColor }) => {
-				if (pubData.canManage) {
+				if (scopeData.activePermissions.canManage) {
 					return (
 						<LicenseSelect pubData={pubData} updateLocalData={updateLocalData}>
 							{({ isPersisting }) => (

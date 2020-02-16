@@ -1,7 +1,13 @@
 require('./redirects'); // Redirect needed v3 routes;
 
-require('./pub'); // Route: ['/pub/:slug', '/pub/:slug/branch/:branchShortId', '/pub/:slug/:mode']
-// require('./pubTest'); // Route: '/pub-test'
+/* Routes for Communities */
+require('./dashboard'); // Route: ['/dashboard', '/dashboard/:mode', '/dashboard/:mode/:slug']
+// require('./dash'); // Route: '/'
+// require('./pub'); // Route: ['/pub/:slug', '/pub/:slug/branch/:branchShortId', '/pub/:slug/:mode']
+require('./pubDocument');
+require('./collection'); // Route: /collection/:id
+require('./dashboardOverview'); // Route: ['/dash', '/dash/overview', '/dash/collection/:collectionSlug', '/dash/collection/:collectionSlug/overview', '/dash/pub/:pubSlug', '/dash/pub/:pubSlug/overview']
+require('./dashboardMembers');
 
 /* Routes for PubPub */
 require('./communityCreate'); // Route: '/community/create'
@@ -12,12 +18,6 @@ require('./pubRedirect'); // Route: '/pub/:slug'
 require('./adminDashboard'); // Route: '/admin'
 require('./landing'); // Route: '/'
 
-/* Routes for Communities */
-require('./dashboard'); // Route: ['/dashboard', '/dashboard/:mode', '/dashboard/:mode/:slug']
-// require('./pub'); // Route: ['/pub/:slug', '/pub/:slug/content/:chapterId', '/pub/:slug/draft', '/pub/:slug/draft/content/:chapterId', '/pub/:slug/:mode', '/pub/:slug/:mode/:subMode']
-require('./page'); // Route: ['/', '/:slug']
-require('./collection'); // Route: /collection/:id
-
 /* Routes for all */
 require('./login'); // Route: '/login'
 require('./privacy'); // Route: '/privacy'
@@ -27,4 +27,14 @@ require('./terms'); // Route: '/tos'
 require('./passwordReset'); // Route: ['/password-reset', '/password-reset/:resetHash/:slug']
 require('./userCreate'); // Route: '/user/create/:hash'
 require('./user'); // Route: ['/user/:slug', '/user/:slug/:mode']
+require('./page'); // Route: ['/', '/:slug']
 require('./noMatch'); // Route: '/*'
+
+// dashboardOverview
+// dashboardActivity
+// dashboardConversations
+// dashboardReviews
+// dashboardMembers
+// dashboardMetrics
+// dashboardSettings
+// dashboardSite

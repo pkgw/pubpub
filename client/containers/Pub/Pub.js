@@ -1,8 +1,8 @@
 import React from 'react';
-import PageWrapper from 'components/PageWrapper/PageWrapper';
-import { hydrateWrapper } from 'utils';
-import { communityDataProps, locationDataProps, loginDataProps } from 'types/base';
-import { pubDataProps } from 'types/pub';
+import PropTypes from 'prop-types';
+
+import { usePageContext } from 'utils/hooks';
+
 import PubSyncManager from './PubSyncManager';
 import PubHeader from './PubHeader';
 import PubDocument from './PubDocument';
@@ -18,13 +18,12 @@ import PubHeaderCompact from './PubHeader/PubHeaderCompact';
 require('./pub.scss');
 
 const propTypes = {
-	communityData: communityDataProps.isRequired,
-	loginData: loginDataProps.isRequired,
-	locationData: locationDataProps.isRequired,
-	pubData: pubDataProps.isRequired,
+	pubData: PropTypes.object.isRequired,
 };
 
 const Pub = (props) => {
+	const { loginData, locationData, communityData } = usePageContext();
+
 	const renderHeader = (useFullHeader, modeProps) => {
 		const { collabData, historyData, pubData, updateLocalData } = modeProps;
 		if (useFullHeader) {
@@ -36,7 +35,7 @@ const Pub = (props) => {
 							updateLocalData={updateLocalData}
 							collabData={collabData}
 							historyData={historyData}
-							communityData={props.communityData}
+							communityData={communityData}
 						/>
 					)}
 				</PubSuspendWhileTyping>
@@ -45,8 +44,8 @@ const Pub = (props) => {
 		return (
 			<PubHeaderCompact
 				pubData={pubData}
-				locationData={props.locationData}
-				communityData={props.communityData}
+				locationData={locationData}
+				communityData={communityData}
 			/>
 		);
 	};
@@ -54,47 +53,35 @@ const Pub = (props) => {
 	return (
 		<PubSuspendWhileTypingProvider>
 			<div id="pub-container">
-				<PageWrapper
-					locationData={props.locationData}
-					communityData={props.communityData}
-					loginData={props.loginData}
+				<PubSyncManager
+					pubData={props.pubData}
+					locationData={locationData}
+					communityData={communityData}
+					loginData={loginData}
 				>
-					<PubSyncManager
-						pubData={props.pubData}
-						locationData={props.locationData}
-						communityData={props.communityData}
-						loginData={props.loginData}
-					>
-						{({
-							pubData,
-							collabData,
-							firebaseBranchRef,
-							updateLocalData,
-							historyData,
-						}) => {
-							const mode = pubData.mode;
-							const modeProps = {
-								pubData: pubData,
-								collabData: collabData,
-								historyData: historyData,
-								firebaseBranchRef: firebaseBranchRef,
-								updateLocalData: updateLocalData,
-							};
-							return (
-								<React.Fragment>
-									{renderHeader(mode === 'document', modeProps)}
-									{mode === 'document' && <PubDocument {...modeProps} />}
-									{mode === 'manage' && <PubManage {...modeProps} />}
-									{mode === 'merge' && <PubMerge {...modeProps} />}
-									{mode === 'review' && <PubReview {...modeProps} />}
-									{mode === 'reviews' && <PubReviews {...modeProps} />}
-									{mode === 'reviewCreate' && <PubReviewCreate {...modeProps} />}
-									{mode === 'branchCreate' && <PubBranchCreate {...modeProps} />}
-								</React.Fragment>
-							);
-						}}
-					</PubSyncManager>
-				</PageWrapper>
+					{({ pubData, collabData, firebaseBranchRef, updateLocalData, historyData }) => {
+						// const mode = pubData.mode;
+						const modeProps = {
+							pubData: pubData,
+							collabData: collabData,
+							historyData: historyData,
+							firebaseBranchRef: firebaseBranchRef,
+							updateLocalData: updateLocalData,
+						};
+						return (
+							<React.Fragment>
+								{renderHeader(true, modeProps)}
+								<PubDocument {...modeProps} />
+								{/* mode === 'manage' && <PubManage {...modeProps} />}
+								{mode === 'merge' && <PubMerge {...modeProps} />}
+								{mode === 'review' && <PubReview {...modeProps} />}
+								{mode === 'reviews' && <PubReviews {...modeProps} />}
+								{mode === 'reviewCreate' && <PubReviewCreate {...modeProps} />}
+								{mode === 'branchCreate' && <PubBranchCreate {...modeProps} /> */}
+							</React.Fragment>
+						);
+					}}
+				</PubSyncManager>
 			</div>
 		</PubSuspendWhileTypingProvider>
 	);
@@ -102,5 +89,3 @@ const Pub = (props) => {
 
 Pub.propTypes = propTypes;
 export default Pub;
-
-hydrateWrapper(Pub);
