@@ -79,8 +79,8 @@ class Team extends Component {
 								<a href={`/user/${admin.slug}`}>
 									<Avatar
 										width={50}
-										initials={admin.initials}
-										avatar={admin.avatar}
+										userInitials={admin.initials}
+										userAvatar={admin.avatar}
 									/>
 								</a>
 							</div>

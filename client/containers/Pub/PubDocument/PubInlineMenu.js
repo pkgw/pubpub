@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import uuidv4 from 'uuid/v4';
 import { Button } from '@blueprintjs/core';
@@ -7,7 +7,7 @@ import { setLocalHighlight, cursor } from '@pubpub/editor';
 import { pubUrl } from 'shared/utils/canonicalUrls';
 import Icon from 'components/Icon/Icon';
 import ClickToCopyButton from 'components/ClickToCopyButton/ClickToCopyButton';
-import { PageContext } from 'utils/hooks';
+import { usePageContext } from 'utils/hooks';
 
 require('./pubInlineMenu.scss');
 
@@ -32,7 +32,8 @@ const shouldOpenBelowSelection = () => {
 
 const PubInlineMenu = (props) => {
 	const { pubData, collabData, historyData } = props;
-	const { locationData, communityData } = useContext(PageContext);
+	const { locationData, communityData, scopeData } = usePageContext();
+	const { canEdit, canEditDraft } = scopeData.activePermissions;
 	const selection = collabData.editorChangeObject.selection || {};
 	const selectionBoundingBox = collabData.editorChangeObject.selectionBoundingBox || {};
 
@@ -66,7 +67,7 @@ const PubInlineMenu = (props) => {
 		{ key: 'em', icon: <Icon icon="italic" /> },
 		{ key: 'link', icon: <Icon icon="link" /> },
 	];
-	const isReadOnly = pubData.isStaticDoc || !pubData.canEditBranch;
+	const isReadOnly = pubData.isStaticDoc || !(canEdit || canEditDraft);
 	// TODO: Make discussions disable-able
 	// if (isReadOnly && !pubData.publicDiscussions) {
 	// 	return null;

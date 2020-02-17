@@ -1,6 +1,5 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { remove as removeDiacritics } from 'diacritics';
-import { PageContext } from 'utils/hooks';
 import Icon from 'components/Icon/Icon';
 import { setIsProd, isProd } from './isProd';
 
@@ -10,10 +9,6 @@ export { apiFetch } from './apiFetch';
 if (typeof window === 'undefined') {
 	setIsProd(process.env.PUBPUB_PRODUCTION);
 }
-
-export const usePageContext = () => {
-	return useContext(PageContext);
-};
 
 export const getFirebaseConfig = function() {
 	return {
@@ -329,8 +324,11 @@ export function generatePageBackground(pageTitle) {
 export function generateRenderLists(layout, pubs) {
 	/* Sort pubs by activeBranch date */
 	const allPubs = pubs.sort((foo, bar) => {
-		const fooDate = foo.activeBranch.firstKeyAt || foo.createdAt;
-		const barDate = bar.activeBranch.firstKeyAt || bar.createdAt;
+		// const fooDate = foo.activeBranch.firstKeyAt || foo.createdAt;
+		// const barDate = bar.activeBranch.firstKeyAt || bar.createdAt;
+		// TODO: Does this still sort newest properly. May have to implement release dates
+		const fooDate = foo.createdAt;
+		const barDate = bar.createdAt;
 		if (fooDate < barDate) {
 			return 1;
 		}

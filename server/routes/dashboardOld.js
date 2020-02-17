@@ -1,5 +1,6 @@
 import React from 'react';
 import Promise from 'bluebird';
+import { Dashboard } from 'containers';
 import Html from '../Html';
 import app from '../server';
 import {
@@ -164,16 +165,14 @@ app.get(['/dashboard', '/dashboard/:mode', '/dashboard/:mode/:slug'], (req, res,
 				<Html
 					chunkName="Dashboard"
 					initialData={initialData}
-					viewData={{
-						pageData: initialData.pageData,
-						pubsData: initialData.pubsData,
-					}}
 					headerComponents={generateMetaComponents({
 						initialData: initialData,
 						title: `${initialData.pageData.title} · Dashboard`,
 						unlisted: true,
 					})}
-				/>,
+				>
+					<Dashboard {...initialData} />
+				</Html>,
 			);
 		})
 		.catch(handleErrors(req, res, next));

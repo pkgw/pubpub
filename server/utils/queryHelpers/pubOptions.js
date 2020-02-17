@@ -3,17 +3,19 @@ import {
 	Collection,
 	CollectionAttribution,
 	CollectionPub,
+	Community,
 	Export,
 	Page,
 	PubAttribution,
 	Release,
 	Thread,
+	ThreadComment,
 	ThreadUser,
 	User,
 } from '../../models';
 import { attributesPublicUser } from '..';
 
-export default ({ isAuth, isPreview, getCollections }) => {
+export default ({ isAuth, isPreview, getCollections, getCommunity }) => {
 	/* Initialize values assuming all inputs are false. */
 	/* Then, iterate over each input and adjust */
 	/* variables as needed */
@@ -22,13 +24,11 @@ export default ({ isAuth, isPreview, getCollections }) => {
 		{
 			model: PubAttribution,
 			as: 'attributions',
-			required: false,
 			separate: true,
 			include: [
 				{
 					model: User,
 					as: 'user',
-					required: false,
 					attributes: attributesPublicUser,
 				},
 			],
@@ -51,10 +51,10 @@ export default ({ isAuth, isPreview, getCollections }) => {
 		{
 			model: Release,
 			as: 'releases',
-			required: false,
 		},
 	];
 	let collectionPubs = [];
+	let community = [];
 	let threadAuthor = [
 		{
 			model: User,
@@ -62,6 +62,7 @@ export default ({ isAuth, isPreview, getCollections }) => {
 			attributes: attributesPublicUser,
 		},
 	];
+	let threadComments = [{ model: ThreadComment, as: 'comments' }];
 	let threadUserInclude = [
 		{
 			model: User,
@@ -78,10 +79,12 @@ export default ({ isAuth, isPreview, getCollections }) => {
 			'labels',
 			'avatar',
 			'doi',
+			'communityId',
 			'createdAt',
 		];
 		pubBranches = [];
 		threadAuthor = [];
+		threadComments = [];
 		threadUserInclude = [];
 	}
 	if (isAuth) {
@@ -90,6 +93,7 @@ export default ({ isAuth, isPreview, getCollections }) => {
 		pubReleases = [];
 		pubAttributions = [];
 		threadAuthor = [];
+		threadComments = [];
 		threadUserInclude = [];
 	}
 	if (getCollections) {
@@ -97,7 +101,6 @@ export default ({ isAuth, isPreview, getCollections }) => {
 			{
 				model: CollectionPub,
 				as: 'collectionPubs',
-				required: false,
 				separate: true,
 				include: [
 					{
@@ -107,7 +110,6 @@ export default ({ isAuth, isPreview, getCollections }) => {
 							{
 								model: Page,
 								as: 'page',
-								required: false,
 								attributes: ['id', 'title', 'slug'],
 							},
 							{
@@ -126,6 +128,24 @@ export default ({ isAuth, isPreview, getCollections }) => {
 			},
 		];
 	}
+	if (getCommunity) {
+		community = [
+			{
+				model: Community,
+				as: 'community',
+				attributes: [
+					'id',
+					'subdomain',
+					'domain',
+					'title',
+					'accentColorLight',
+					'accentColorDark',
+					'headerLogo',
+					'headerColorType',
+				],
+			},
+		];
+	}
 	return {
 		attributes: pubAttributes,
 		include: [
@@ -134,11 +154,11 @@ export default ({ isAuth, isPreview, getCollections }) => {
 			...pubReleases,
 			{
 				separate: true,
-				required: false,
 				model: Thread,
 				as: 'threads',
 				include: [
 					...threadAuthor,
+					...threadComments,
 					{
 						model: ThreadUser,
 						as: 'threadUsers',
@@ -147,6 +167,7 @@ export default ({ isAuth, isPreview, getCollections }) => {
 				],
 			},
 			...collectionPubs,
+			...community,
 		],
 	};
 };

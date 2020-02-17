@@ -1,8 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Popover, Position } from '@blueprintjs/core';
 
-import { PageContext } from 'utils/hooks';
+import { usePageContext } from 'utils/hooks';
 
 import PubDiscussions from '../../PubDiscussions/PubDiscussions';
 import PubBottomSection, { SectionBullets, AccentedIconButton } from '../PubBottomSection';
@@ -34,7 +34,8 @@ const defaultProps = {
 const DiscussionsSection = (props) => {
 	const { pubData, updateLocalData } = props;
 	const { discussions } = pubData;
-	const { communityData, scopeData } = useContext(PageContext);
+	const { communityData, scopeData } = usePageContext();
+	const { canView, canManage, canCreateDiscussions } = scopeData.activePermissions;
 	const [isBrowsingArchive, setIsBrowsingArchive] = useState(false);
 	const [isShowingAnchoredComments, setShowingAnchoredComments] = useState(true);
 	const [sortMode, setSortMode] = useState('newestThread');
@@ -80,7 +81,7 @@ const DiscussionsSection = (props) => {
 								communityData={communityData}
 								labelsData={pubData.labels || []}
 								selectedLabels={filteredLabels}
-								isManager={scopeData.activePermissions.canManage}
+								isManager={canManage}
 								onBrowseArchive={setIsBrowsingArchive}
 								isBrowsingArchive={isBrowsingArchive}
 								onShowAnchoredComments={setShowingAnchoredComments}
@@ -141,7 +142,9 @@ const DiscussionsSection = (props) => {
 					{...props}
 					filterThreads={createThreadFilter(searchTerm)}
 					searchTerm={searchTerm}
-					showBottomInput={pubData.canDiscussBranch && !isSearching && !isBrowsingArchive}
+					showBottomInput={
+						(canView || canCreateDiscussions) && !isSearching && !isBrowsingArchive
+					}
 				/>
 			)}
 		</PubBottomSection>
