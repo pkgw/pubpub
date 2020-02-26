@@ -32,8 +32,8 @@ const shouldOpenBelowSelection = () => {
 
 const PubInlineMenu = (props) => {
 	const { pubData, collabData, historyData } = props;
-	const { locationData, communityData, scopeData } = usePageContext();
-	const { canEdit, canEditDraft } = scopeData.activePermissions;
+	const { communityData, scopeData } = usePageContext();
+	const { canView, canCreateDiscussions } = scopeData.activePermissions;
 	const selection = collabData.editorChangeObject.selection || {};
 	const selectionBoundingBox = collabData.editorChangeObject.selectionBoundingBox || {};
 
@@ -67,14 +67,14 @@ const PubInlineMenu = (props) => {
 		{ key: 'em', icon: <Icon icon="italic" /> },
 		{ key: 'link', icon: <Icon icon="link" /> },
 	];
-	const isReadOnly = pubData.isStaticDoc || !(canEdit || canEditDraft);
+	// const isReadOnly = pubData.isStaticDoc || !(canEdit || canEditDraft);
 	// TODO: Make discussions disable-able
 	// if (isReadOnly && !pubData.publicDiscussions) {
 	// 	return null;
 	// }
 	return (
 		<div className="pub-inline-menu-component bp3-elevation-2" style={menuStyle}>
-			{!isReadOnly &&
+			{!pubData.isReadOnly &&
 				formattingItems.map((item) => {
 					if (!menuItemsObject[item.key]) {
 						return null;
@@ -99,7 +99,7 @@ const PubInlineMenu = (props) => {
 						/>
 					);
 				})}
-			{pubData.canDiscussBranch && !locationData.params.versionNumber && (
+			{(canView || canCreateDiscussions) && !pubData.isHistoricalDoc && (
 				<Button
 					minimal={true}
 					icon={<Icon icon="chat" />}

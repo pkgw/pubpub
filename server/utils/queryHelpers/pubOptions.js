@@ -9,6 +9,7 @@ import {
 	PubAttribution,
 	Release,
 	Thread,
+	ThreadAnchor,
 	ThreadComment,
 	ThreadUser,
 	User,
@@ -62,7 +63,20 @@ export default ({ isAuth, isPreview, getCollections, getCommunity }) => {
 			attributes: attributesPublicUser,
 		},
 	];
-	let threadComments = [{ model: ThreadComment, as: 'comments' }];
+	let threadComments = [
+		{
+			model: ThreadComment,
+			as: 'comments',
+			include: [
+				{
+					model: User,
+					as: 'author',
+					attributes: attributesPublicUser,
+				},
+			],
+		},
+	];
+	let threadAnchor = [{ model: ThreadAnchor, as: 'anchor' }];
 	let threadUserInclude = [
 		{
 			model: User,
@@ -85,6 +99,7 @@ export default ({ isAuth, isPreview, getCollections, getCommunity }) => {
 		pubBranches = [];
 		threadAuthor = [];
 		threadComments = [];
+		threadAnchor = [];
 		threadUserInclude = [];
 	}
 	if (isAuth) {
@@ -94,6 +109,7 @@ export default ({ isAuth, isPreview, getCollections, getCommunity }) => {
 		pubAttributions = [];
 		threadAuthor = [];
 		threadComments = [];
+		threadAnchor = [];
 		threadUserInclude = [];
 	}
 	if (getCollections) {
@@ -159,6 +175,7 @@ export default ({ isAuth, isPreview, getCollections, getCommunity }) => {
 				include: [
 					...threadAuthor,
 					...threadComments,
+					...threadAnchor,
 					{
 						model: ThreadUser,
 						as: 'threadUsers',

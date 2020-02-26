@@ -21,6 +21,7 @@ const propTypes = {
 		canDiscussBranch: PropTypes.bool,
 	}).isRequired,
 	collabData: PropTypes.object.isRequired,
+	historyData: PropTypes.object.isRequired,
 	firebaseBranchRef: PropTypes.object,
 	updateLocalData: PropTypes.func.isRequired,
 	sideContentRef: PropTypes.object.isRequired,
@@ -41,13 +42,9 @@ const DiscussionsSection = (props) => {
 	const [sortMode, setSortMode] = useState('newestThread');
 	const [filteredLabels, setFilteredLabels] = useState([]);
 
-	const nonArchivedDiscussions = discussions.filter(
-		(ds) => !ds.isArchived && ds.branchId === pubData.activeBranch.id,
-	);
+	const nonClosedDiscussions = discussions.filter((ds) => !ds.isClosed);
 
-	const renderCenterItems = () => (
-		<SectionBullets>{nonArchivedDiscussions.length}</SectionBullets>
-	);
+	const renderCenterItems = () => <SectionBullets>{nonClosedDiscussions.length}</SectionBullets>;
 
 	// eslint-disable-next-line react/prop-types
 	const renderIconItems = ({ isExpanded, iconColor }) => {

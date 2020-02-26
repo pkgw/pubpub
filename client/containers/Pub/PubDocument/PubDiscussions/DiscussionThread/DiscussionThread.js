@@ -15,7 +15,7 @@ const propTypes = {
 	pubData: PropTypes.object.isRequired,
 	collabData: PropTypes.object.isRequired,
 	firebaseBranchRef: PropTypes.object,
-	threadData: PropTypes.array.isRequired,
+	threadData: PropTypes.object.isRequired,
 	updateLocalData: PropTypes.func.isRequired,
 	canPreview: PropTypes.bool,
 	searchTerm: PropTypes.string,
@@ -29,7 +29,8 @@ const defaultProps = {
 
 const DiscussionThread = (props) => {
 	const { pubData, threadData, canPreview, searchTerm } = props;
-	const { communityData } = usePageContext();
+	const { communityData, scopeData } = usePageContext();
+	const { canView, canCreateDiscussion } = scopeData.activePermissions;
 	const [previewExpanded, setPreviewExpanded] = useState(false);
 	const isPreview = canPreview && !previewExpanded;
 
@@ -38,10 +39,13 @@ const DiscussionThread = (props) => {
 		let pendingHiddenCount = 0;
 		const elements = [];
 
-		const flushPendingCount = () => {
+		const flushPendingCount = (discussionId) => {
 			if (pendingHiddenCount > 0) {
 				elements.push(
-					<div className="overflow-listing"> + {pendingHiddenCount} more...</div>,
+					<div key={discussionId} className="overflow-listing">
+						{' '}
+						+ {pendingHiddenCount} more...
+					</div>,
 				);
 			}
 			pendingHiddenCount = 0;
@@ -54,7 +58,7 @@ const DiscussionThread = (props) => {
 			const isPreviewDiscussion = isRootThread || !matchesSearch;
 			if (isRootThread || meetsMinimum || matchesSearch) {
 				++shownDiscussionsCount;
-				flushPendingCount();
+				flushPendingCount(discussion.id);
 				elements.push(
 					<DiscussionItem
 						key={discussion.id}
@@ -69,12 +73,13 @@ const DiscussionThread = (props) => {
 			}
 		});
 
-		flushPendingCount();
+		flushPendingCount('root');
 		return elements;
 	};
 
 	const renderDiscussions = () => {
-		const filteredDiscussions = threadData.filter((discussion) => discussion.threadNumber);
+		// const filteredDiscussions = threadData.filter((discussion) => discussion.threadNumber);
+		const filteredDiscussions = threadData.comments;
 		if (isPreview) {
 			return renderPreviewDiscussionsAndOverflow(filteredDiscussions, 2);
 		}
@@ -124,16 +129,17 @@ const DiscussionThread = (props) => {
 				/>
 			)}
 			<LabelList pubData={pubData} threadData={threadData} />
-			{!isPreview && threadData[0].initAnchorText && threadData[0].initAnchorText.exact && (
+
+			{!isPreview && threadData.anchor && (
 				<div className="anchor-text">
-					{threadData[0].initAnchorText.prefix}
-					<span className="exact">{threadData[0].initAnchorText.exact}</span>
-					{threadData[0].initAnchorText.suffix}
+					{threadData.anchor.prefix}
+					<span className="exact">{threadData.anchor.exact}</span>
+					{threadData.anchor.suffix}
 				</div>
 			)}
 			{renderDiscussions()}
-			{!isPreview && pubData.canDiscussBranch && (
-				<DiscussionInput key={threadData.length} {...props} />
+			{!isPreview && (canView || canCreateDiscussion) && (
+				<DiscussionInput key={threadData.comments.length} {...props} />
 			)}
 		</div>
 	);

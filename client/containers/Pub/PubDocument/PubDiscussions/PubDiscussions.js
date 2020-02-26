@@ -9,12 +9,13 @@ import { NonIdealState } from '@blueprintjs/core';
 import ThreadGroup from './ThreadGroup';
 import DiscussionThread from './DiscussionThread';
 import DiscussionInput from './DiscussionThread/DiscussionInput';
-import { groupThreadsByLine, nestDiscussionsToThreads } from './discussionUtils';
+import { groupThreadsByLine } from './discussionUtils';
 
 require('./pubDiscussions.scss');
 
 const propTypes = {
 	pubData: PropTypes.object.isRequired,
+	historyData: PropTypes.object.isRequired,
 	collabData: PropTypes.object.isRequired,
 	firebaseBranchRef: PropTypes.object,
 	filterThreads: PropTypes.func,
@@ -42,8 +43,10 @@ const PubDiscussions = (props) => {
 		sideContentRef,
 		searchTerm,
 		showBottomInput,
+		historyData,
 	} = props;
-	const { communityData } = usePageContext();
+	const { communityData, scopeData } = usePageContext();
+	const { canView, canCreateDiscussions } = scopeData;
 	const decorations = collabData.editorChangeObject.decorations || [];
 	const { width: windowWidth } = useWindowSize();
 
@@ -55,7 +58,8 @@ const PubDiscussions = (props) => {
 		}
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [windowWidth]);
-	const threads = nestDiscussionsToThreads(pubData.discussions);
+	// const threads = nestDiscussionsToThreads(pubData.discussions);
+	const threads = pubData.discussions;
 	const groupsByLine = groupThreadsByLine(decorations, threads);
 	const prevNewDiscussionIds = useRef([]);
 	const prevConvertedDiscussionIds = useRef([]);
@@ -74,6 +78,7 @@ const PubDiscussions = (props) => {
 					key={group.mountClassName}
 					pubData={pubData}
 					collabData={collabData}
+					historyData={historyData}
 					firebaseBranchRef={firebaseBranchRef}
 					threads={group.threads}
 					mountClassName={group.mountClassName}
@@ -92,10 +97,11 @@ const PubDiscussions = (props) => {
 		const filteredThreads = filterThreads(threads);
 		const emptyMessage =
 			threads.filter(
-				(th) => th[0] && th[0].branchId === pubData.activeBranch.id && !th[0].isArchived,
+				// (th) => th[0] && th[0].branchId === pubData.activeBranch.id && !th[0].isArchived,
+				(th) => th && !th.isClosed,
 			).length > 0
 				? 'No matching comments (some are hidden by filters)'
-				: pubData.canDiscuss
+				: canView || canCreateDiscussions
 				? ' Why not start the discussion?'
 				: '';
 		return (
@@ -104,6 +110,7 @@ const PubDiscussions = (props) => {
 					<DiscussionInput
 						pubData={pubData}
 						collabData={collabData}
+						historyData={historyData}
 						updateLocalData={updateLocalData}
 						threadData={[{ id: undefined }]}
 						isPubBottomInput={true}
@@ -120,9 +127,10 @@ const PubDiscussions = (props) => {
 				{filteredThreads.map((thread) => {
 					return (
 						<DiscussionThread
-							key={thread[0].id}
+							key={thread.id}
 							pubData={pubData}
 							collabData={collabData}
+							historyData={historyData}
 							firebaseBranchRef={firebaseBranchRef}
 							threadData={thread}
 							updateLocalData={updateLocalData}

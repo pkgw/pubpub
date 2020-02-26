@@ -172,6 +172,29 @@ const Header = () => {
 						)}
 					</div>
 					<div className="buttons-wrapper">
+						{isBasePubPub && (
+							<React.Fragment>
+								<AnchorButton
+									href="/pricing"
+									minimal={true}
+									large={true}
+									text="Pricing"
+								/>
+								<AnchorButton
+									href="/search"
+									minimal={true}
+									large={true}
+									text="Search"
+									className="hide-on-mobile"
+								/>
+								<AnchorButton
+									href="/about"
+									minimal={true}
+									large={true}
+									text="About"
+								/>
+							</React.Fragment>
+						)}
 						{!isBasePubPub &&
 							loggedIn &&
 							(!communityData.hideCreatePubButton || isAdmin) && (
@@ -211,6 +234,7 @@ const Header = () => {
 								placement="top-end"
 								menuStyle={{ zIndex: 20 }}
 								buttonProps={{
+									className: 'header-dashboard-button',
 									minimal: true,
 									large: true,
 									rightIcon: 'caret-down',
